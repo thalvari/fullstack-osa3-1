@@ -1,8 +1,3 @@
-const express = require('express');
-const bodyParser = require('body-parser')
-const morgan = require('morgan')
-const app = express();
-
 let persons = [
     {
         "name": "Arto Hellas",
@@ -26,9 +21,16 @@ let persons = [
     },
 ]
 
+const express = require('express');
+const bodyParser = require('body-parser')
+const cors = require('cors')
+const morgan = require('morgan')
+const app = express();
+app.use(bodyParser.json())
+app.use(cors())
+app.use(express.static('build'))
 morgan.token('content', (req, res) => JSON.stringify(req.body))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content'))
-app.use(bodyParser.json())
 
 app.get('/api/persons', (req, res) => {
     res.json(persons)
@@ -68,6 +70,11 @@ app.post('/api/persons', (req, res) => {
     }
     persons = persons.concat(person)
     res.json(person)
+})
+
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
 })
 
 module.exports = app;
